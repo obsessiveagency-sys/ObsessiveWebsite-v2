@@ -1,5 +1,5 @@
 import { T } from '../tokens.js'
-import { Reveal, Ticker, InkBtn, Display, SectionLabel } from '../components/shared.jsx'
+import { Reveal, Ticker, InkBtn, Display, SectionLabel, CountUp } from '../components/shared.jsx'
 
 const TRADES = ['Plumbing & HVAC', 'Electrical', 'Roofing', 'Landscaping', 'General Contracting', 'Painting & Finishing']
 
@@ -47,14 +47,37 @@ export default function HomePage({ setPage }) {
                 <span style={{ width: 32, height: 2, background: T.red, display: 'inline-block', flexShrink: 0 }} />
                 Websites for Trade Businesses · Chicago, IL · Est. 2024
               </div>
-              <h1 className="hero-animate" style={{
-                animationDelay: '80ms',
+              <h1 style={{
                 fontFamily: "'Bebas Neue', sans-serif",
                 fontSize: 'clamp(72px,10vw,148px)',
                 lineHeight: .92, letterSpacing: '.01em', color: T.ink,
               }}>
-                WE BUILD<br />WEBSITES THAT<br />BOOK YOU<br />
-                <span style={{ color: T.red }}>MORE JOBS.</span>
+                {[
+                  { words: ['WE', 'BUILD'],      red: false },
+                  { words: ['WEBSITES', 'THAT'], red: false },
+                  { words: ['BOOK', 'YOU'],       red: false },
+                  { words: ['MORE', 'JOBS.'],     red: true  },
+                ].map((line, li) => (
+                  <span key={li} style={{ display: 'block' }}>
+                    {line.words.map((word, wi) => {
+                      const globalIndex = [0, 2, 4, 6][li] + wi
+                      return (
+                        <span key={wi} style={{ overflow: 'hidden', display: 'inline-block', lineHeight: 0.92, marginRight: '0.25em' }}>
+                          <span
+                            className="word-reveal"
+                            style={{
+                              display: 'inline-block',
+                              color: line.red ? T.red : 'inherit',
+                              animationDelay: `${80 + globalIndex * 60}ms`,
+                            }}
+                          >
+                            {word}
+                          </span>
+                        </span>
+                      )
+                    })}
+                  </span>
+                ))}
               </h1>
             </div>
 
@@ -223,7 +246,7 @@ export default function HomePage({ setPage }) {
               { stat: '$99',  label: 'Total monthly cost — all in', sub: 'no hidden fees, no contracts' },
             ].map((s, i) => (
               <div key={i} style={{ padding: '32px', borderRight: i < 2 ? `1px solid ${T.ink}` : 'none' }}>
-                <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 56, color: T.red, lineHeight: 1, marginBottom: 6 }}>{s.stat}</div>
+                <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 56, color: T.red, lineHeight: 1, marginBottom: 6 }}><CountUp value={s.stat} /></div>
                 <div style={{ fontFamily: "'Instrument Sans', sans-serif", fontWeight: 600, fontSize: 13, color: T.ink, marginBottom: 2 }}>{s.label}</div>
                 <div style={{ fontFamily: "'Instrument Sans', sans-serif", fontSize: 12, color: T.muted }}>{s.sub}</div>
               </div>
@@ -247,7 +270,7 @@ export default function HomePage({ setPage }) {
           ].map((t, i) => (
             <Reveal key={i} delay={i * 80}>
               <div style={{ padding: '36px 32px', borderRight: i < 2 ? `1px solid ${T.ink}` : 'none' }}>
-                <div style={{ display: 'inline-block', background: T.redDim, color: T.red, fontFamily: "'Instrument Sans', sans-serif", fontWeight: 700, fontSize: 11, letterSpacing: '.08em', textTransform: 'uppercase', padding: '4px 10px', marginBottom: 20 }}>{t.result}</div>
+                <div className="result-badge" style={{ display: 'inline-block', background: T.redDim, color: T.red, fontFamily: "'Instrument Sans', sans-serif", fontWeight: 700, fontSize: 11, letterSpacing: '.08em', textTransform: 'uppercase', padding: '4px 10px', marginBottom: 20 }}>{t.result}</div>
                 <p style={{ fontSize: 15, color: T.ink, lineHeight: 1.75, marginBottom: 24 }}>"{t.quote}"</p>
                 <div style={{ fontFamily: "'Instrument Sans', sans-serif", fontWeight: 600, fontSize: 13, color: T.ink }}>{t.name}</div>
                 <div style={{ fontFamily: "'Instrument Sans', sans-serif", fontSize: 12, color: T.muted }}>{t.co}</div>

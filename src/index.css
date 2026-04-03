@@ -18,6 +18,10 @@ button { font-family: inherit; }
 }
 .ticker-anim { animation: ticker 34s linear infinite; }
 
+/* Ticker hover-pause */
+.ticker-wrap { cursor: default; }
+.ticker-wrap:hover .ticker-anim { animation-play-state: paused; opacity: 0.7; transition: opacity 0.2s; }
+
 /* Mobile menu slide down */
 @keyframes slideDown {
   from { opacity: 0; transform: translateY(-8px); }
@@ -71,6 +75,15 @@ button { font-family: inherit; }
   animation: heroFadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+/* ── HERO WORD STAGGER ───────────────────────────────────────── */
+@keyframes wordSlideUp {
+  from { transform: translateY(105%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.word-reveal {
+  animation: wordSlideUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 /* ── BUTTON MICRO-INTERACTIONS ───────────────────────────────── */
 .ink-btn { transition: background .15s, color .15s, transform .12s cubic-bezier(0.16,1,0.3,1) !important; }
 .ink-btn:hover:not(:disabled) { transform: scale(1.02); }
@@ -92,6 +105,24 @@ button { font-family: inherit; }
     transform: none !important;
     clip-path: none !important;
   }
+  .ticker-anim { animation: none !important; }
+  .result-badge::after { animation: none !important; }
+  .word-reveal { animation: none !important; opacity: 1 !important; transform: none !important; }
+}
+
+/* ── SHIMMER BADGE ──────────────────────────────────────────── */
+@keyframes badgeShimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.result-badge { position: relative; overflow: hidden; }
+.result-badge::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.4) 50%, transparent 100%);
+  transform: translateX(-100%);
+  animation: badgeShimmer 2.5s ease-in-out 1s infinite;
 }
 
 /* Card hovers */

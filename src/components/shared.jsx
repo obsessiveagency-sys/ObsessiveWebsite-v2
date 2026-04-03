@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { T } from '../tokens.js'
 
 export function Display({ children, size = 'clamp(40px,5vw,68px)', style = {} }) {
@@ -83,7 +83,7 @@ export function Ticker() {
   ]
   const doubled = [...items, ...items]
   return (
-    <div style={{
+    <div className="ticker-wrap" style={{
       background: T.ink,
       borderTop: `1.5px solid ${T.ink}`,
       borderBottom: `1.5px solid ${T.ink}`,
@@ -106,6 +106,43 @@ export function Ticker() {
       </div>
     </div>
   )
+}
+
+/* Animated number counter — counts up from 0 when scrolled into view
+   value: string like '+38%', '48H', '$99'
+*/
+export function CountUp({ value }) {
+  const match = String(value).match(/^([^0-9]*)(\d+)([^0-9]*)$/)
+  if (!match) return <span>{value}</span>
+  const [prefix, target, suffix] = [match[1], parseInt(match[2], 10), match[3]]
+  const [count, setCount] = useState(0)
+  const [started, setStarted] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    const el = ref.current; if (!el) return
+    const obs = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { setStarted(true); obs.unobserve(el) }
+    }, { threshold: 0.5 })
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (!started) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setCount(target); return }
+    const duration = 1200, start = performance.now()
+    let raf
+    const tick = (now) => {
+      const t = Math.min((now - start) / duration, 1)
+      setCount(Math.round((1 - Math.pow(1 - t, 3)) * target))
+      if (t < 1) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [started, target])
+
+  return <span ref={ref}>{prefix}{count}{suffix}</span>
 }
 
 /* Scroll-reveal wrapper
